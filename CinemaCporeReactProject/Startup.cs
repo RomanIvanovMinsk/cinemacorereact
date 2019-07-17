@@ -24,7 +24,7 @@ namespace CinemaCporeReactProject
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/build";
+                configuration.RootPath = "clientapp1/build";
             });
         }
 
@@ -52,7 +52,7 @@ namespace CinemaCporeReactProject
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "ClientApp";
+                spa.Options.SourcePath = "clientapp1";
 
                 if (env.IsDevelopment())
                 {
