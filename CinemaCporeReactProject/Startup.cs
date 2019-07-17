@@ -21,6 +21,16 @@ namespace CinemaCporeReactProject
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.AddSwaggerDocument(settings =>
+    {
+        settings.PostProcess = document =>
+        {
+            document.Info.Version = "v1";
+            document.Info.Title = "Example API";
+            document.Info.Description = "REST API for example.";
+        };
+    });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "CinemaCporeReactProject", Version = "v1" });
@@ -31,6 +41,8 @@ namespace CinemaCporeReactProject
             {
                 configuration.RootPath = "clientapp1/build";
             });
+
+            services.AddAuthentication().AddCookie();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,7 +60,8 @@ namespace CinemaCporeReactProject
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            app.UseSwagger();
+            SwaggerBuilderExtensions.UseSwagger(app);
+            NSwagApplicationBuilderExtensions.UseSwagger(app);
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CinemaCporeReactProject V1");
@@ -70,6 +83,8 @@ namespace CinemaCporeReactProject
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            app.UseAuthentication();
         }
     }
 }

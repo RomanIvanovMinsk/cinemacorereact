@@ -1,0 +1,98 @@
+﻿{
+  "x-generator": "NSwag v13.0.4.0 (NJsonSchema v10.0.21.0 (Newtonsoft.Json v11.0.0.0))",
+  "swagger": "2.0",
+  "info": {
+    "title": "Example API",
+    "description": "REST API for example.",
+    "version": "v1"
+  },
+  "produces": [
+    "text/plain",
+    "application/json",
+    "text/json"
+  ],
+  "paths": {
+    "/api/SampleData2/WeatherForecasts": {
+      "get": {
+        "tags": [
+          "SampleData2"
+        ],
+        "operationId": "SampleData2_WeatherForecasts",
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/SampleData2/Authorize": {
+      "get": {
+        "tags": [
+          "SampleData2"
+        ],
+        "operationId": "SampleData2_Authorize",
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/SampleData/WeatherForecasts": {
+      "get": {
+        "tags": [
+          "SampleData"
+        ],
+        "operationId": "SampleData_WeatherForecasts",
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/WeatherForecast"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "WeatherForecast": {
+      "type": "object",
+      "required": [
+        "temperatureC",
+        "temperatureF"
+      ],
+      "properties": {
+        "dateFormatted": {
+          "type": "string"
+        },
+        "temperatureC": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "temperatureF": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    }
+  }
+}
