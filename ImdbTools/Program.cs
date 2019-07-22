@@ -60,6 +60,8 @@ namespace ImdbTools
                 //    );
                 await Task.WhenAll(tasks);
                 prog.Dispose();
+                db.Dispose();
+                db = null;
                 Console.WriteLine("Complited");
                 Console.ReadLine();
             }
