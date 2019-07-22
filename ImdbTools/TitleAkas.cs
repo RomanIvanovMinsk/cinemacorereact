@@ -15,6 +15,6 @@ namespace ImdbTools
         public string language { get; set; }
         public string[] types { get; set; }
         public string[] attributes { get; set; }
-        public bool isOriginalTitle { get; set; }
+        public string isOriginalTitle { get; set; }
     }
 }

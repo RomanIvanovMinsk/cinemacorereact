@@ -52,6 +52,7 @@ namespace ImdbTools
             //    async () => await DownloadAndSave<TitleAkas>(connectionString, "/title.akas.tsv.gz", client, prog.Spawn(10000, "Title Akas", progressBarOptions))
             //    );
             await Task.WhenAll(tasks);
+            prog.Dispose();
             Console.WriteLine("Complited");
             Console.ReadLine();
         }
@@ -61,13 +62,13 @@ namespace ImdbTools
             var channel = Channel.CreateBounded<T>(new BoundedChannelOptions(100_000)
             {
                 SingleWriter = true,
-                SingleReader = true,
+                SingleReader = false,
                 FullMode = BoundedChannelFullMode.Wait
             });
 
             List<Task> readingTasks = new List<Task>();
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 2; i++)
             {
                 Task readTask = WriteToDb<T>(channel.Reader, connectionString, progress);
                 readingTasks.Add(readTask);
@@ -77,7 +78,7 @@ namespace ImdbTools
             Task downloadingTask = DownloadAndParseAsync<T>(path, client, channel.Writer, progress);
 
             readingTasks.Add(downloadingTask);
-            await Task.WhenAll(readingTasks);
+            await Task.WhenAll(readingTasks).ConfigureAwait(false);
         }
 
 
@@ -124,17 +125,24 @@ namespace ImdbTools
 
         public static async Task WriteToDb<T>(ChannelReader<T> reader, string connectionString, IProgressBar progress) where T : class
         {
+            try{
             string baseMessage = progress.Message;
+            List<T> waitingToWrite = new List<T>(1000);
             //using (var db = new LiteDatabase(connectionString))
             {
                 var col = db.GetCollection<T>(typeof(T).Name);
-                while (await reader.WaitToReadAsync().ConfigureAwait(false))
+                while (await reader.WaitToReadAsync())
                 {
-                    var item = await reader.ReadAsync().ConfigureAwait(false);
+                    var item = await reader.ReadAsync();
 
                     try
                     {
-                        col.Upsert(item);
+                        waitingToWrite.Add(item);
+                        if (waitingToWrite.Count >= 1000)
+                        {
+                            col.Upsert(waitingToWrite);
+                            waitingToWrite.Clear();
+                        }
                         progress.Tick($"{baseMessage}: {progress.CurrentTick} of {progress.MaxTicks}");
                     }
                     catch (Exception ex)
@@ -147,8 +155,14 @@ namespace ImdbTools
                     }
 
                 }
+                col.Upsert(waitingToWrite);
             }
             await reader.Completion;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
     }
 }
