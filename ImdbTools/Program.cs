@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using LiteDB;
+using Serilog;
 using ShellProgressBar;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace ImdbTools
     class Program
     {
         static LiteDatabase db;
+        static ILogger log;
         static async Task Main(string[] args)
         {
             var client = new HttpClient()
@@ -26,7 +28,10 @@ namespace ImdbTools
             };
 
 
-
+            log = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("log.txt")
+    .CreateLogger();
             string connectionString = @"Mode=Exclusive; Filename=MyData.db";
 
             db = new LiteDatabase(connectionString);
@@ -37,24 +42,31 @@ namespace ImdbTools
                 ProgressCharacter = '─',
                 CollapseWhenFinished = false,
             };
-            var prog = new ProgressBar(10000, "Downloading and parsing Imdb db", progressBarOptions);
-            List<Task> tasks = new List<Task>();
-            tasks.Add(DownloadAndSave<TitleBasic>(connectionString, "/title.basics.tsv.gz", client, prog.Spawn(10000, "Title Basic", progressBarOptions)));
-            tasks.Add(DownloadAndSave<NameBasics>(connectionString, "/name.basics.tsv.gz", client, prog.Spawn(10000, "Name Basic", progressBarOptions)));
-            tasks.Add(DownloadAndSave<TitleAkas>(connectionString, "/title.akas.tsv.gz", client, prog.Spawn(10000, "Title Akas", progressBarOptions)));
-            tasks.Add(DownloadAndSave<TitleCrew>(connectionString, "/title.crew.tsv.gz", client, prog.Spawn(10000, "Title Crew", progressBarOptions)));
-            tasks.Add(DownloadAndSave<TitleEpicosde>(connectionString, "/title.episode.tsv.gz", client, prog.Spawn(10000, "Title Epicodes", progressBarOptions)));
-            tasks.Add(DownloadAndSave<TitlePricipals>(connectionString, "/title.principals.tsv.gz", client, prog.Spawn(10000, "Title Principals", progressBarOptions)));
-            tasks.Add(DownloadAndSave<TitleRatings>(connectionString, "/title.ratings.tsv.gz", client, prog.Spawn(10000, "Title Ratings", progressBarOptions)));
-            //Parallel.Invoke(
-            //    async () => await DownloadAndSave<TitleBasic>(connectionString, "/title.basics.tsv.gz", client, prog.Spawn(10000, "Title Basic", progressBarOptions)),
-            //    async () => await DownloadAndSave<NameBasics>(connectionString, "/name.basics.tsv.gz", client, prog.Spawn(10000, "Name Basic", progressBarOptions)),
-            //    async () => await DownloadAndSave<TitleAkas>(connectionString, "/title.akas.tsv.gz", client, prog.Spawn(10000, "Title Akas", progressBarOptions))
-            //    );
-            await Task.WhenAll(tasks);
-            prog.Dispose();
-            Console.WriteLine("Complited");
-            Console.ReadLine();
+            try
+            {
+                var prog = new ProgressBar(10000, "Downloading and parsing Imdb db", progressBarOptions);
+                List<Task> tasks = new List<Task>();
+                tasks.Add(DownloadAndSave<TitleBasic>(connectionString, "/title.basics.tsv.gz", client, prog.Spawn(10000, "Title Basic", progressBarOptions)));
+                tasks.Add(DownloadAndSave<NameBasics>(connectionString, "/name.basics.tsv.gz", client, prog.Spawn(10000, "Name Basic", progressBarOptions)));
+                tasks.Add(DownloadAndSave<TitleAkas>(connectionString, "/title.akas.tsv.gz", client, prog.Spawn(10000, "Title Akas", progressBarOptions)));
+                tasks.Add(DownloadAndSave<TitleCrew>(connectionString, "/title.crew.tsv.gz", client, prog.Spawn(10000, "Title Crew", progressBarOptions)));
+                tasks.Add(DownloadAndSave<TitleEpicosde>(connectionString, "/title.episode.tsv.gz", client, prog.Spawn(10000, "Title Epicodes", progressBarOptions)));
+                tasks.Add(DownloadAndSave<TitlePricipals>(connectionString, "/title.principals.tsv.gz", client, prog.Spawn(10000, "Title Principals", progressBarOptions)));
+                tasks.Add(DownloadAndSave<TitleRatings>(connectionString, "/title.ratings.tsv.gz", client, prog.Spawn(10000, "Title Ratings", progressBarOptions)));
+                //Parallel.Invoke(
+                //    async () => await DownloadAndSave<TitleBasic>(connectionString, "/title.basics.tsv.gz", client, prog.Spawn(10000, "Title Basic", progressBarOptions)),
+                //    async () => await DownloadAndSave<NameBasics>(connectionString, "/name.basics.tsv.gz", client, prog.Spawn(10000, "Name Basic", progressBarOptions)),
+                //    async () => await DownloadAndSave<TitleAkas>(connectionString, "/title.akas.tsv.gz", client, prog.Spawn(10000, "Title Akas", progressBarOptions))
+                //    );
+                await Task.WhenAll(tasks);
+                prog.Dispose();
+                Console.WriteLine("Complited");
+                Console.ReadLine();
+            }
+            catch(Exception ex)
+            {
+                log.Fatal(ex, "Fatal");
+            }
         }
 
         public static async Task DownloadAndSave<T>(string connectionString, string path, HttpClient client, IProgressBar progress) where T : class, new()
@@ -118,6 +130,7 @@ namespace ImdbTools
 
             catch (Exception ex)
             {
+                log.Fatal(ex, "Download and parse exception");
                 throw;
             }
         }
@@ -125,42 +138,45 @@ namespace ImdbTools
 
         public static async Task WriteToDb<T>(ChannelReader<T> reader, string connectionString, IProgressBar progress) where T : class
         {
-            try{
-            string baseMessage = progress.Message;
-            List<T> waitingToWrite = new List<T>(1000);
-            //using (var db = new LiteDatabase(connectionString))
+            try
             {
-                var col = db.GetCollection<T>(typeof(T).Name);
-                while (await reader.WaitToReadAsync())
+                string baseMessage = progress.Message;
+                List<T> waitingToWrite = new List<T>(1000);
+                //using (var db = new LiteDatabase(connectionString))
                 {
-                    var item = await reader.ReadAsync();
-
-                    try
+                    var col = db.GetCollection<T>(typeof(T).Name);
+                    while (await reader.WaitToReadAsync())
                     {
-                        waitingToWrite.Add(item);
-                        if (waitingToWrite.Count >= 1000)
+                        var item = await reader.ReadAsync();
+
+                        try
                         {
-                            col.Upsert(waitingToWrite);
-                            waitingToWrite.Clear();
+                            waitingToWrite.Add(item);
+                            if (waitingToWrite.Count >= 1000)
+                            {
+                                col.Upsert(waitingToWrite);
+                                waitingToWrite.Clear();
+                            }
+                            progress.Tick($"{baseMessage}: {progress.CurrentTick} of {progress.MaxTicks}");
                         }
-                        progress.Tick($"{baseMessage}: {progress.CurrentTick} of {progress.MaxTicks}");
-                    }
-                    catch (Exception ex)
-                    {
-                        throw;
-                    }
-                    finally
-                    {
+                        catch (Exception ex)
+                        {
+                            log.Fatal(ex, "Reader exception");
+                            throw;
+                        }
+                        finally
+                        {
+
+                        }
 
                     }
-
+                    col.Upsert(waitingToWrite);
                 }
-                col.Upsert(waitingToWrite);
+                await reader.Completion;
             }
-            await reader.Completion;
-            }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                log.Fatal(ex, "Reader exception");
                 throw;
             }
         }
