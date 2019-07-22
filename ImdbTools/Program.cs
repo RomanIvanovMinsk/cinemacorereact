@@ -47,24 +47,24 @@ namespace ImdbTools
             Console.ReadLine();
         }
 
-        public static async Task DownloadAndSave<T>(string connectionString, string path, HttpClient client, IProgressBar progress) where T: class, new()
+        public static async Task DownloadAndSave<T>(string connectionString, string path, HttpClient client, IProgressBar progress) where T : class, new()
         {
             var channel = Channel.CreateBounded<T>(new BoundedChannelOptions(1_000)
             {
                 SingleWriter = true,
-                SingleReader = false,
+                SingleReader = true,
                 FullMode = BoundedChannelFullMode.Wait
             });
-            
+
             List<Task> readingTasks = new List<Task>();
-            
+
             for (int i = 0; i < 1; i++)
             {
                 Task readTask = WriteToDb<T>(channel.Reader, connectionString, progress);
                 readingTasks.Add(readTask);
             }
 
-            
+
             Task downloadingTask = DownloadAndParseAsync<T>(path, client, channel.Writer, progress);
 
             readingTasks.Add(downloadingTask);
@@ -96,7 +96,7 @@ namespace ImdbTools
                         //await writter.WriteAsync(csvReader.GetRecord<T>()).ConfigureAwait(false);
                         //await Task.Delay(10);
 
-                        await writter.WriteAsync(csvReader.GetRecord<T>());
+                        await writter.WriteAsync(csvReader.GetRecord<T>()).ConfigureAwait(false);
                         count++;
                         progress.MaxTicks = count;
 
@@ -121,22 +121,22 @@ namespace ImdbTools
                 var col = db.GetCollection<T>(typeof(T).Name);
                 while (await reader.WaitToReadAsync().ConfigureAwait(false))
                 {
-                    while (reader.TryRead(out T item))
-                    {
-                        try
-                        {
-                            col.Upsert(item);
-                            progress.Tick($"{baseMessage}: {progress.CurrentTick} of {progress.MaxTicks}");
-                        }
-                        catch(Exception ex)
-                        {
-                            throw;
-                        }
-                        finally
-                        {
+                    var item = await reader.ReadAsync().ConfigureAwait(false);
 
-                        }
+                    try
+                    {
+                        col.Upsert(item);
+                        progress.Tick($"{baseMessage}: {progress.CurrentTick} of {progress.MaxTicks}");
                     }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+
+                    }
+
                 }
             }
             await reader.Completion;
