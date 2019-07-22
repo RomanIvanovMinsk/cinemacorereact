@@ -16,6 +16,7 @@ namespace ImdbTools
 {
     class Program
     {
+        static LiteDatabase db;
         static async Task Main(string[] args)
         {
             var client = new HttpClient()
@@ -24,10 +25,14 @@ namespace ImdbTools
 
             };
 
-            string connectionString = @"MyData.db";
+
+
+            string connectionString = @"Mode=Exclusive; Filename=MyData.db";
+
+            db = new LiteDatabase(connectionString);
             var progressBarOptions = new ProgressBarOptions()
             {
-                DisplayTimeInRealTime = false,
+                DisplayTimeInRealTime = true,
                 EnableTaskBarProgress = true,
                 ProgressCharacter = '─',
                 CollapseWhenFinished = false,
@@ -41,7 +46,11 @@ namespace ImdbTools
             tasks.Add(DownloadAndSave<TitleEpicosde>(connectionString, "/title.episode.tsv.gz", client, prog.Spawn(10000, "Title Epicodes", progressBarOptions)));
             tasks.Add(DownloadAndSave<TitlePricipals>(connectionString, "/title.principals.tsv.gz", client, prog.Spawn(10000, "Title Principals", progressBarOptions)));
             tasks.Add(DownloadAndSave<TitleRatings>(connectionString, "/title.ratings.tsv.gz", client, prog.Spawn(10000, "Title Ratings", progressBarOptions)));
-
+            //Parallel.Invoke(
+            //    async () => await DownloadAndSave<TitleBasic>(connectionString, "/title.basics.tsv.gz", client, prog.Spawn(10000, "Title Basic", progressBarOptions)),
+            //    async () => await DownloadAndSave<NameBasics>(connectionString, "/name.basics.tsv.gz", client, prog.Spawn(10000, "Name Basic", progressBarOptions)),
+            //    async () => await DownloadAndSave<TitleAkas>(connectionString, "/title.akas.tsv.gz", client, prog.Spawn(10000, "Title Akas", progressBarOptions))
+            //    );
             await Task.WhenAll(tasks);
             Console.WriteLine("Complited");
             Console.ReadLine();
@@ -49,7 +58,7 @@ namespace ImdbTools
 
         public static async Task DownloadAndSave<T>(string connectionString, string path, HttpClient client, IProgressBar progress) where T : class, new()
         {
-            var channel = Channel.CreateBounded<T>(new BoundedChannelOptions(1_000)
+            var channel = Channel.CreateBounded<T>(new BoundedChannelOptions(100_000)
             {
                 SingleWriter = true,
                 SingleReader = true,
@@ -116,7 +125,7 @@ namespace ImdbTools
         public static async Task WriteToDb<T>(ChannelReader<T> reader, string connectionString, IProgressBar progress) where T : class
         {
             string baseMessage = progress.Message;
-            using (var db = new LiteDatabase(connectionString))
+            //using (var db = new LiteDatabase(connectionString))
             {
                 var col = db.GetCollection<T>(typeof(T).Name);
                 while (await reader.WaitToReadAsync().ConfigureAwait(false))
