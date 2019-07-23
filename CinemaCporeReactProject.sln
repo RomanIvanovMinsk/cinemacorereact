@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaCporeReactProject", "CinemaCporeReactProject\CinemaCporeReactProject.csproj", "{89BE132D-6003-497F-904E-676B551344A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CinemaCporeReactProject", "CinemaCporeReactProject\CinemaCporeReactProject.csproj", "{6CE7E242-FF09-4EAA-B27B-41571A1613A6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CinemaCporeReactProject.Client", "CinemaCporeReactProject.Client\CinemaCporeReactProject.Client.csproj", "{03BC0775-A727-43A1-93EF-5A96B1BE0988}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImdbTools", "ImdbTools\ImdbTools.csproj", "{1C3E994D-6AC8-4DB8-BFD9-29BF9347FBAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaCporeReactProject.DAL", "CinemaCporeReactProject.DAL\CinemaCporeReactProject.DAL.csproj", "{EAD915EA-AF35-4801-BAF8-AB4564A21BE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +17,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{89BE132D-6003-497F-904E-676B551344A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{89BE132D-6003-497F-904E-676B551344A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{89BE132D-6003-497F-904E-676B551344A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{89BE132D-6003-497F-904E-676B551344A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CE7E242-FF09-4EAA-B27B-41571A1613A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CE7E242-FF09-4EAA-B27B-41571A1613A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CE7E242-FF09-4EAA-B27B-41571A1613A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CE7E242-FF09-4EAA-B27B-41571A1613A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03BC0775-A727-43A1-93EF-5A96B1BE0988}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03BC0775-A727-43A1-93EF-5A96B1BE0988}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03BC0775-A727-43A1-93EF-5A96B1BE0988}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03BC0775-A727-43A1-93EF-5A96B1BE0988}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C3E994D-6AC8-4DB8-BFD9-29BF9347FBAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C3E994D-6AC8-4DB8-BFD9-29BF9347FBAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C3E994D-6AC8-4DB8-BFD9-29BF9347FBAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C3E994D-6AC8-4DB8-BFD9-29BF9347FBAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAD915EA-AF35-4801-BAF8-AB4564A21BE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAD915EA-AF35-4801-BAF8-AB4564A21BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAD915EA-AF35-4801-BAF8-AB4564A21BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAD915EA-AF35-4801-BAF8-AB4564A21BE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
