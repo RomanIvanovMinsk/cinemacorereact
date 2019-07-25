@@ -39,7 +39,7 @@ namespace ImdbTools
 			.WriteTo.File("log.txt")
 			.CreateLogger();
             //await DownloadImdbDb();
-            await NormalizeDb();
+            //await NormalizeDb();
             await SeedData();
 
             Console.ReadLine();
@@ -54,51 +54,62 @@ namespace ImdbTools
                 .Build();
             var dbContextBuilder = new DbContextOptionsBuilder<MoviesRepository>()
                 .UseSqlServer(config.GetConnectionString("DefaultConnection"));
-            var repository = new MoviesRepository(dbContextBuilder.Options);
-            repository.Database.EnsureCreated();
-            repository.Database.OpenConnection();
-            repository.Database.ExecuteSqlCommand("SET IDENTITY_INSERT [dbo].[Genries] ON");
-            foreach (var genere in genries.genres)
-            {
-                if (repository.Genries.Any(x => x.Id == genere.id))
-                    continue;
-                repository.Genries.Add(new CinemaCporeReactProject.DAL.Models.Genere()
-                {
-                    Id = genere.id,
-                    Title = genere.name
-                });
+				
+			var repository = new MoviesRepository(dbContextBuilder.Options);
+			if (repository.Genries.Count() == 0)
+			{
+				repository.Database.EnsureCreated();
+				repository.Database.OpenConnection();
+				repository.Database.ExecuteSqlCommand("SET IDENTITY_INSERT [dbo].[Genries] ON");
+				foreach (var genere in genries.genres)
+				{
+					if (repository.Genries.Any(x => x.Id == genere.id))
+						continue;
+					repository.Genries.Add(new CinemaCporeReactProject.DAL.Models.Genere()
+					{
+						Id = genere.id,
+						Title = genere.name
+					});
 
-            }
-            repository.SaveChanges();
-            repository.Database.ExecuteSqlCommand("SET IDENTITY_INSERT [dbo].[Genries] OFF");
+				}
+				repository.SaveChanges();
+				repository.Database.ExecuteSqlCommand("SET IDENTITY_INSERT [dbo].[Genries] OFF");
 
-            var norlizedCollection = dbNormalized.GetCollection<MovieModel>("Movies");
-            foreach (var movie in norlizedCollection.FindAll())
-            {
-                if (repository.Movies.Any(x=>x.ImdbId == movie.ImdbId))
-                    continue;
-                var movieGenries = repository.Genries.Where(x => movie.GenereIds.Contains(x.Id)).ToList();
-                repository.Movies.Add(new Movie()
-                {
-                    ImdbId = movie.ImdbId,
-                    OriginalTitle = movie.OriginalTitle,
-                    Overview = movie.Overview,
-                    Poster = movie.PosterUrl,
-                    PosterFullUrl = movie.PosterFullUrl,
-                    ReleasedDate = movie.Released,
-                    Year = movie.StartYear,
-                    Type = movie.TitleType,
-                    Title = movie.PrimaryTitle,
-                    RuntimeMinutes = movie.RuntimeMinutes,
-                    Rating = new Rating()
-                    {
-                        AverageRating = movie.Rating.averageRating,
-                        NumberVotes = movie.Rating.numVotes
-                    },
-                    Genere = movieGenries,
-                });
-            }
-            repository.SaveChanges();
+				var norlizedCollection = dbNormalized.GetCollection<MovieModel>("Movies");
+				foreach (var movie in norlizedCollection.FindAll())
+				{
+					if (repository.Movies.Any(x => x.ImdbId == movie.ImdbId))
+						continue;
+					var movieGenries = repository.Genries.Where(x => movie.GenereIds.Contains(x.Id)).ToList();
+					repository.Movies.Add(new Movie()
+					{
+						ImdbId = movie.ImdbId,
+						OriginalTitle = movie.OriginalTitle,
+						Overview = movie.Overview,
+						Poster = movie.PosterUrl,
+						PosterFullUrl = movie.PosterFullUrl,
+						ReleasedDate = movie.Released,
+						Year = movie.StartYear,
+						Type = movie.TitleType,
+						Title = movie.PrimaryTitle,
+						RuntimeMinutes = movie.RuntimeMinutes,
+						Rating = new Rating()
+						{
+							AverageRating = movie.Rating.averageRating,
+							NumberVotes = movie.Rating.numVotes
+						},
+						Genere = movieGenries,
+					});
+				}
+				repository.SaveChanges();
+			}
+
+			if (repository.Users.Count() == 0)
+			{
+				repository.Users.Add(new RomanAuthSpa.User() { Username = "admin", Password = "b" });
+				repository.SaveChanges();
+			}
+           
             Console.WriteLine("Done");
         }
 

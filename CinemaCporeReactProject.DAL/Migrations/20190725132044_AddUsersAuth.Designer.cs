@@ -4,14 +4,16 @@ using CinemaCporeReactProject.DAL.Repositores;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CinemaCporeReactProject.DAL.Migrations
 {
     [DbContext(typeof(MoviesRepository))]
-    partial class MoviesRepositoryModelSnapshot : ModelSnapshot
+    [Migration("20190725132044_AddUsersAuth")]
+    partial class AddUsersAuth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

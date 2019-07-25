@@ -6,64 +6,53 @@
     "description": "REST API for example.",
     "version": "v1"
   },
-  "produces": [
-    "text/plain",
-    "application/json",
-    "text/json"
-  ],
   "paths": {
-    "/api/SampleData2/WeatherForecasts": {
-      "get": {
+    "/api/Users/Authenticate": {
+      "post": {
         "tags": [
-          "SampleData2"
+          "Users"
         ],
-        "operationId": "SampleData2_WeatherForecasts",
+        "operationId": "Users_Authenticate",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "userParam",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            },
+            "x-nullable": false
+          }
+        ],
         "responses": {
           "200": {
-            "x-nullable": false,
+            "x-nullable": true,
             "description": "",
             "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "type": "file"
             }
           }
         }
       }
     },
-    "/api/SampleData2/Authorize": {
+    "/api/Users/GetAll": {
       "get": {
         "tags": [
-          "SampleData2"
+          "Users"
         ],
-        "operationId": "SampleData2_Authorize",
+        "operationId": "Users_GetAll",
         "responses": {
           "200": {
-            "x-nullable": false,
+            "x-nullable": true,
             "description": "",
             "schema": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "/api/SampleData/WeatherForecasts": {
-      "get": {
-        "tags": [
-          "SampleData"
-        ],
-        "operationId": "SampleData_WeatherForecasts",
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/WeatherForecast"
-              }
+              "type": "file"
             }
           }
         }
@@ -71,26 +60,36 @@
     }
   },
   "definitions": {
-    "WeatherForecast": {
+    "User": {
       "type": "object",
       "required": [
-        "temperatureC",
-        "temperatureF"
+        "id"
       ],
       "properties": {
-        "dateFormatted": {
-          "type": "string"
-        },
-        "temperatureC": {
+        "id": {
           "type": "integer",
           "format": "int32"
         },
-        "summary": {
+        "firstName": {
           "type": "string"
         },
-        "temperatureF": {
-          "type": "integer",
-          "format": "int32"
+        "lastName": {
+          "type": "string"
+        },
+        "shortDescription": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
         }
       }
     }

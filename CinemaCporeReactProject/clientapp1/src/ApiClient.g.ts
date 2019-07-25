@@ -7,7 +7,7 @@
 //----------------------
 // ReSharper disable InconsistentNaming
 
-export class SampleData2Client {
+export class UsersClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -17,135 +17,86 @@ export class SampleData2Client {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    weatherForecasts(): Promise<string[]> {
-        let url_ = this.baseUrl + "/api/SampleData2/WeatherForecasts";
+    authenticate(userParam: User): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/Users/Authenticate";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(userParam);
+
         let options_ = <RequestInit>{
-            method: "GET",
+            body: content_,
+            method: "POST",
             headers: {
-                "Accept": "application/json"
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processWeatherForecasts(_response);
+            return this.processAuthenticate(_response);
         });
     }
 
-    protected processWeatherForecasts(response: Response): Promise<string[]> {
+    protected processAuthenticate(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(item);
-            }
-            return result200;
-            });
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<string[]>(<any>null);
+        return Promise.resolve<FileResponse | null>(<any>null);
     }
 
-    authorize(): Promise<string> {
-        let url_ = this.baseUrl + "/api/SampleData2/Authorize";
+    getAll(): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/Users/GetAll";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
             method: "GET",
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processAuthorize(_response);
+            return this.processGetAll(_response);
         });
     }
 
-    protected processAuthorize(response: Response): Promise<string> {
+    protected processGetAll(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return result200;
-            });
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<string>(<any>null);
+        return Promise.resolve<FileResponse | null>(<any>null);
     }
 }
 
-export class SampleDataClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+export class User implements IUser {
+    id!: number;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    shortDescription?: string | undefined;
+    description?: string | undefined;
+    username?: string | undefined;
+    password?: string | undefined;
+    token?: string | undefined;
 
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : "";
-    }
-
-    weatherForecasts(): Promise<WeatherForecast[]> {
-        let url_ = this.baseUrl + "/api/SampleData/WeatherForecasts";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <RequestInit>{
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processWeatherForecasts(_response);
-        });
-    }
-
-    protected processWeatherForecasts(response: Response): Promise<WeatherForecast[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(WeatherForecast.fromJS(item));
-            }
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<WeatherForecast[]>(<any>null);
-    }
-}
-
-export class WeatherForecast implements IWeatherForecast {
-    dateFormatted?: string | undefined;
-    temperatureC!: number;
-    summary?: string | undefined;
-    temperatureF!: number;
-
-    constructor(data?: IWeatherForecast) {
+    constructor(data?: IUser) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -156,35 +107,54 @@ export class WeatherForecast implements IWeatherForecast {
 
     init(data?: any) {
         if (data) {
-            this.dateFormatted = data["dateFormatted"];
-            this.temperatureC = data["temperatureC"];
-            this.summary = data["summary"];
-            this.temperatureF = data["temperatureF"];
+            this.id = data["id"];
+            this.firstName = data["firstName"];
+            this.lastName = data["lastName"];
+            this.shortDescription = data["shortDescription"];
+            this.description = data["description"];
+            this.username = data["username"];
+            this.password = data["password"];
+            this.token = data["token"];
         }
     }
 
-    static fromJS(data: any): WeatherForecast {
+    static fromJS(data: any): User {
         data = typeof data === 'object' ? data : {};
-        let result = new WeatherForecast();
+        let result = new User();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["dateFormatted"] = this.dateFormatted;
-        data["temperatureC"] = this.temperatureC;
-        data["summary"] = this.summary;
-        data["temperatureF"] = this.temperatureF;
+        data["id"] = this.id;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["shortDescription"] = this.shortDescription;
+        data["description"] = this.description;
+        data["username"] = this.username;
+        data["password"] = this.password;
+        data["token"] = this.token;
         return data; 
     }
 }
 
-export interface IWeatherForecast {
-    dateFormatted?: string | undefined;
-    temperatureC: number;
-    summary?: string | undefined;
-    temperatureF: number;
+export interface IUser {
+    id: number;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    shortDescription?: string | undefined;
+    description?: string | undefined;
+    username?: string | undefined;
+    password?: string | undefined;
+    token?: string | undefined;
+}
+
+export interface FileResponse {
+    data: Blob;
+    status: number;
+    fileName?: string;
+    headers?: { [name: string]: any };
 }
 
 export class ApiException extends Error {
