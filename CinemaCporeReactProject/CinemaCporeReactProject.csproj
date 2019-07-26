@@ -26,12 +26,26 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="clientapp1\src\auth.ts" />
+    <None Remove="clientapp1\src\AuthButton.tsx" />
+    <None Remove="clientapp1\src\Login.tsx" />
+    <None Remove="clientapp1\src\PrivateRoute.tsx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ViewModels\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CinemaCporeReactProject.DAL\CinemaCporeReactProject.DAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="clientapp1\src\auth.ts" />
+    <TypeScriptCompile Include="clientapp1\src\AuthButton.tsx" />
+    <TypeScriptCompile Include="clientapp1\src\Login.tsx" />
+    <TypeScriptCompile Include="clientapp1\src\PrivateRoute.tsx" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

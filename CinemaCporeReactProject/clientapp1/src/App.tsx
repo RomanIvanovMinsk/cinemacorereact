@@ -1,51 +1,42 @@
 import React from 'react';
 import logo from './logo.svg';
+import { BrowserRouter, Link, Route } from 'react-router-dom';
+import AuthButton from './AuthButton';
+import Login from './Login';
+import PrivateRoute from './PrivateRoute';
 import './App.css';
-import { SampleDataClient, WeatherForecast, SampleData2Client } from './ApiClient.g';
+
+const Public = <h3>Public</h3>
+const Private = <h3>Protected</h3>
+
 
 class Props {
-  data: WeatherForecast[] | undefined;
   array: string[] | undefined;
 }
 
 export default class App extends React.Component<any, Props> {
   readonly state = new Props();
   async componentDidMount() {
-    const host = "http://localhost:50342";
-    const data: WeatherForecast[] = await new SampleDataClient(host).weatherForecasts();
-    this.setState({
-      data: data
-    });
-    const array: string[] = await new SampleData2Client(host).weatherForecasts();
-    this.setState({
-      array: array
-    });
+
 
   }
 
   render() {
-
-    return (
-
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-        </a>
-          <label>{JSON.stringify(this.state.data)}</label>
-          <label>{JSON.stringify(this.state.array)}</label>
-        </header>
-      </div>
-    );
+        return (
+            <BrowserRouter>
+              <div>
+                  <AuthButton />
+                  <ul>
+                      <li><Link to="/protected">Protected Page</Link></li>
+                  </ul>
+                  <Route path="/login" component={Login} />
+                  <PrivateRoute path='/protected' component={Private} />
+              </div>
+            </BrowserRouter>     
+          
+          
+     )
+    
   }
 }
 
