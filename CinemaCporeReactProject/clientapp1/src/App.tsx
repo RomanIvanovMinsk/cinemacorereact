@@ -7,7 +7,7 @@ import PrivateRoute from './PrivateRoute';
 import './App.css';
 
 const Public = <h3>Public</h3>
-const Private = <h3>Protected</h3>
+const Private = () => {return (<h3>Protected</h3>)};
 
 
 class Props {
