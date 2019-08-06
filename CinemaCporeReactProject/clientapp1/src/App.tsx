@@ -1,12 +1,12 @@
 import React from 'react';
 import logo from './logo.svg';
 import { BrowserRouter, Link, Route } from 'react-router-dom';
-import AuthButton from './AuthButton';
-import Login from './Login';
-import PrivateRoute from './PrivateRoute';
+import AuthButton from './Components/AuthButton';
+import Login from './Pages/Login';
+import PrivateRoute from './Components/PrivateRoute';
 import './App.css';
 
-const Public = <h3>Public</h3>
+const Public = () => {return  <h3>Public</h3>};
 const Private = () => {return (<h3>Protected</h3>)};
 
 

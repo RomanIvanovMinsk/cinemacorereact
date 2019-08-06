@@ -1,18 +1,20 @@
 ﻿import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import Auth from './auth';
+import Auth from '../auth';
 
 
 class Login extends Component<any> {
     state = {
         redirectToReferrer: false
     }
-    login = () => {
-        Auth.authenticate( () => {
-            this.setState(() => ({
+    public login = (e) => {
+        e.preventDefault();
+        const x = Auth;
+        Auth.authenticate().then(x => {
+            this.setState({
                 redirectToReferrer: true
-            }))
-        })
+            })
+        });
     }
     render() {
         const { from } = this.props.location.state || { from: { pathname: '/' } }
@@ -23,8 +25,10 @@ class Login extends Component<any> {
         }
 
         return (
-            <div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
                 <p>You must log in to view the page</p>
+                <input type="email" />
+                <input type="password" />
                 <button onClick={this.login}>Log in</button>
             </div>
         )
