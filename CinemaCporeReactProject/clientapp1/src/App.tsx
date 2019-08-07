@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import { BrowserRouter, Link, Route } from 'react-router-dom';
 import AuthButton from './Components/AuthButton';
 import Login from './Pages/Login';
+import Register from './Pages/Register';
 import PrivateRoute from './Components/PrivateRoute';
 import './App.css';
 
@@ -30,6 +31,7 @@ export default class App extends React.Component<any, Props> {
                       <li><Link to="/protected">Protected Page</Link></li>
                   </ul>
                   <Route path="/login" component={Login} />
+                  <Route path="/register" component={Register} />
                   <PrivateRoute path='/protected' component={Private} />
               </div>
             </BrowserRouter>     

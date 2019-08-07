@@ -5,7 +5,6 @@ import LoginBackground from '../img/login_background.jpg';
 import Button from '@material-ui/core/Button';
 import { Input, TextField } from '@material-ui/core';
 
-
 const styles = {
     background: {
         background: {
@@ -54,7 +53,7 @@ const styles = {
 
 }
 
-class Login extends Component<any> {
+class Register extends Component<any> {
     state = {
         redirectToReferrer: false
     }
@@ -83,25 +82,24 @@ class Login extends Component<any> {
                 <div style={styles.form.form}>
                     <div style={styles.form.formBackground}>
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                            <h1 style={styles.form.formHeader}>Sign In</h1>
+                            <h1 style={styles.form.formHeader}>Register </h1>
                             <TextField label="Email" required margin="normal" variant="filled"
                                 style={styles.form.textField}
                                 type="email"
                             />
                             <TextField label="Password" required margin="normal" variant="filled"
-                                style={styles.form.textField}
-                                type="password" />
+                                style={styles.form.textField} type="password" />
                             <div style={{ height: "20px" }} />
-                            <Button color="primary" onClick={this.login} variant="contained">Sign In</Button>
+                            <Button color="primary" onClick={this.login} variant="contained">Register</Button>
 
-                            <label>New to Netflix? <a href="#" onClick={(e) => {
+                            <label>Already have an account? <a href="#" onClick={(e) => {
                                 e.preventDefault();
-                                this.props.history.push('/register');
+                                this.props.history.push('/login');
                             }}
                                 style={{
                                     color: "white",
                                     textDecoration: "none"
-                                }}>Sign up now</a></label>
+                                }}>Sign In</a></label>
                         </div>
                     </div>
 
@@ -112,4 +110,4 @@ class Login extends Component<any> {
     }
 }
 
-export default Login;
+export default Register;
