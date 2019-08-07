@@ -17,8 +17,8 @@ export class UsersClient {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    authenticate(userParam: User): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/Users/Authenticate";
+    signIn(userParam: SignInRequest): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/Users/SignIn";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(userParam);
@@ -33,11 +33,47 @@ export class UsersClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processAuthenticate(_response);
+            return this.processSignIn(_response);
         });
     }
 
-    protected processAuthenticate(response: Response): Promise<FileResponse | null> {
+    protected processSignIn(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(<any>null);
+    }
+
+    signUp(userParam: SignUpRequest): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/Users/SignUp";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(userParam);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processSignUp(_response);
+        });
+    }
+
+    protected processSignUp(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -86,17 +122,11 @@ export class UsersClient {
     }
 }
 
-export class User implements IUser {
-    id!: number;
-    firstName?: string | undefined;
-    lastName?: string | undefined;
-    shortDescription?: string | undefined;
-    description?: string | undefined;
-    username?: string | undefined;
+export class SignInRequest implements ISignInRequest {
+    email?: string | undefined;
     password?: string | undefined;
-    token?: string | undefined;
 
-    constructor(data?: IUser) {
+    constructor(data?: ISignInRequest) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -107,47 +137,69 @@ export class User implements IUser {
 
     init(data?: any) {
         if (data) {
-            this.id = data["id"];
-            this.firstName = data["firstName"];
-            this.lastName = data["lastName"];
-            this.shortDescription = data["shortDescription"];
-            this.description = data["description"];
-            this.username = data["username"];
+            this.email = data["email"];
             this.password = data["password"];
-            this.token = data["token"];
         }
     }
 
-    static fromJS(data: any): User {
+    static fromJS(data: any): SignInRequest {
         data = typeof data === 'object' ? data : {};
-        let result = new User();
+        let result = new SignInRequest();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["firstName"] = this.firstName;
-        data["lastName"] = this.lastName;
-        data["shortDescription"] = this.shortDescription;
-        data["description"] = this.description;
-        data["username"] = this.username;
+        data["email"] = this.email;
         data["password"] = this.password;
-        data["token"] = this.token;
         return data; 
     }
 }
 
-export interface IUser {
-    id: number;
-    firstName?: string | undefined;
-    lastName?: string | undefined;
-    shortDescription?: string | undefined;
-    description?: string | undefined;
-    username?: string | undefined;
+export interface ISignInRequest {
+    email?: string | undefined;
     password?: string | undefined;
-    token?: string | undefined;
+}
+
+export class SignUpRequest implements ISignUpRequest {
+    email?: string | undefined;
+    password?: string | undefined;
+
+    constructor(data?: ISignUpRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.email = data["email"];
+            this.password = data["password"];
+        }
+    }
+
+    static fromJS(data: any): SignUpRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new SignUpRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        data["password"] = this.password;
+        return data; 
+    }
+}
+
+export interface ISignUpRequest {
+    email?: string | undefined;
+    password?: string | undefined;
 }
 
 export interface FileResponse {

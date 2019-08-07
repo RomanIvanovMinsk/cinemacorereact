@@ -1,16 +1,14 @@
-﻿
-
-
-
+﻿using CinemaCporeReactProject.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RomanAuthSpa.Services;
 using RomanAuthSpa.ViewModels;
+using System.Threading.Tasks;
 
 namespace RomanAuthSpa.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class UsersController : Controller
     {
         private IUserService _userService;
@@ -23,14 +21,21 @@ namespace RomanAuthSpa.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("[action]")]
-        public IActionResult Authenticate([FromBody]User userParam)
+        public async Task<IActionResult> SignIn([FromBody]SignInRequest userParam)
         {
-            var user = _userService.Authenticate(userParam.Username, userParam.Password);
+            var response = await _userService.AuthenticateAsync(userParam.Email, userParam.Password);
 
-            if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+            return Ok(response);
+        }
 
-            return Ok(user);
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("[action]")]
+        public async Task<IActionResult> SignUp([FromBody]SignUpRequest userParam)
+        {
+            var response = await _userService.CreateUser(userParam.Email, userParam.Password);
+
+            return Ok(response);
         }
 
 

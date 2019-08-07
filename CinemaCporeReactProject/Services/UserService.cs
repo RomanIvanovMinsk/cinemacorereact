@@ -1,6 +1,9 @@
 ﻿using CinemaCporeReactProject.DAL.Repositores;
 using CinemaCporeReactProject.Helpers;
+using CinemaCporeReactProject.Models;
+using CinemaCporeReactProject.Models.ReactGetStarted.Model;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -9,29 +12,51 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace RomanAuthSpa.Services
 {
     public class UserService : IUserService
     {
         private readonly AppSettings _appSettings;
-        private List<User> _users;
-        private IHostingEnvironment _env;
-		private readonly MoviesRepository _usersRepository;
+        private readonly MoviesRepository _usersRepository;
 
-		public UserService(IOptions<AppSettings> appSettings, IHostingEnvironment env, MoviesRepository usersRepository)
-        {
-            _appSettings = appSettings.Value;
-            _env = env;
-			_usersRepository = usersRepository;
-		}
+        private readonly UserManager<IdentityUser> _service;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public User Authenticate(string username, string password)
+        public UserService(MoviesRepository usersRepository,
+            UserManager<IdentityUser> service, SignInManager<IdentityUser> signInManager)
         {
-			var user = GetByUsername(username, password);
-            // return null if user not found
-            if (user == null)
-                return null;
+            _usersRepository = usersRepository;
+            _service = service;
+            _signInManager = signInManager;
+        }
+
+        public async Task<Response<UserSigninViewModel>> CreateUser(string userName, string password)
+        {
+            var response = new Response<UserSigninViewModel>();
+            var user = await _service.FindByNameAsync(userName);
+            if (user != null)
+            {
+
+                return response.AddError(new Error(nameof(userName), "User exists", "user_exists"));
+            }
+            var userResult = await _service.CreateAsync(new IdentityUser(userName), password);
+            if (userResult.Succeeded)
+            {
+                return await AuthenticateAsync(userName, password);
+            }
+            return response.AddError(new Error("Error", "Failed to create user"));
+        }
+
+        public async Task<Response<UserSigninViewModel>> AuthenticateAsync(string username, string password)
+        {
+            var identity = await GetIdentity(username, password);
+            var response = new Response<UserSigninViewModel>();
+            if (identity.Key == null)
+            {
+                return response.AddError(new Error("Error", "Unauthorized", "user_credentials_invalid"));
+            }
 
             // authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -40,41 +65,64 @@ namespace RomanAuthSpa.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                    new Claim(ClaimTypes.Name, identity.Key.Id)
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(366),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            user.Token = tokenHandler.WriteToken(token);
+            string strToken = tokenHandler.WriteToken(token);
 
-            // remove password before returning
-            user.Password = null;
+            return response.Success(new UserSigninViewModel()
+            {
+                Email = username,
+                FullName = identity.Key.UserName,
+                Token = strToken
+            });
+        }
 
-            return user;
+        private async Task<KeyValuePair<IdentityUser, IReadOnlyCollection<Claim>>> GetIdentity(string userName, string password)
+        {
+            List<Claim> claims = null;
+
+            var user = await _service.FindByNameAsync(userName);
+            if (user != null)
+            {
+
+
+                var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+                if (result.Succeeded)
+                {
+                    claims = new List<Claim>
+                    {
+                        new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserName),
+                    };
+                }
+            }
+            return new KeyValuePair<IdentityUser, IReadOnlyCollection<Claim>>(user, claims);
         }
 
         public List<User> GetAll()
         {
-			return _usersRepository.Users.ToList();
-		}
+            return _usersRepository.Users.ToList();
+        }
 
 
         public User GetByUsername(string username, string password)
         {
-			User user;
+            User user;
             try
             {
-				user = _usersRepository.Users.FirstOrDefault(x => x.Username == username && x.Password == password);
+                user = _usersRepository.Users.FirstOrDefault(x => x.Username == username && x.Password == password);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-				throw;
+                throw;
             }
 
-            return user;          
+            return user;
         }
 
-        
+
     }
 }

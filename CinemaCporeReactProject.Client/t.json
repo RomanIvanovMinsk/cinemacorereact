@@ -7,12 +7,12 @@
     "version": "v1"
   },
   "paths": {
-    "/api/Users/Authenticate": {
+    "/api/Users/SignIn": {
       "post": {
         "tags": [
           "Users"
         ],
-        "operationId": "Users_Authenticate",
+        "operationId": "Users_SignIn",
         "consumes": [
           "application/json-patch+json",
           "application/json",
@@ -25,7 +25,41 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/SignInRequest"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/SignUp": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "Users_SignUp",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "userParam",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SignUpRequest"
             },
             "x-nullable": false
           }
@@ -60,35 +94,24 @@
     }
   },
   "definitions": {
-    "User": {
+    "SignInRequest": {
       "type": "object",
-      "required": [
-        "id"
-      ],
       "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "shortDescription": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "username": {
+        "email": {
           "type": "string"
         },
         "password": {
           "type": "string"
+        }
+      }
+    },
+    "SignUpRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
         },
-        "token": {
+        "password": {
           "type": "string"
         }
       }
