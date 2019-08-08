@@ -56,7 +56,9 @@ const styles = {
 
 class Login extends Component<any> {
     state = {
-        redirectToReferrer: false
+        redirectToReferrer: false,
+        email: '' as string,
+        password: '' as string
     }
     public login = (e) => {
         e.preventDefault();
@@ -87,10 +89,13 @@ class Login extends Component<any> {
                             <TextField label="Email" required margin="normal" variant="filled"
                                 style={styles.form.textField}
                                 type="email"
+                                onChange={(e) => this.setState({ email: e.target.value })}
                             />
                             <TextField label="Password" required margin="normal" variant="filled"
                                 style={styles.form.textField}
-                                type="password" />
+                                type="password"
+                                onChange={(e) => this.setState({ password: e.target.value })}
+                            />
                             <div style={{ height: "20px" }} />
                             <Button color="primary" onClick={this.login} variant="contained">Sign In</Button>
 

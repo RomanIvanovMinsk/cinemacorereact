@@ -1,4 +1,5 @@
-﻿using CinemaCporeReactProject.DAL.Repositores;
+﻿using CinemaCporeReactProject.DAL.Models.Entities;
+using CinemaCporeReactProject.DAL.Repositores;
 using CinemaCporeReactProject.Helpers;
 using CinemaCporeReactProject.Models;
 using CinemaCporeReactProject.Models.ReactGetStarted.Model;
@@ -14,20 +15,19 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RomanAuthSpa.Services
+namespace CinemaCporeReactProject.Services
 {
     public class UserService : IUserService
     {
         private readonly AppSettings _appSettings;
-        private readonly MoviesRepository _usersRepository;
 
         private readonly UserManager<IdentityUser> _service;
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public UserService(MoviesRepository usersRepository,
-            UserManager<IdentityUser> service, SignInManager<IdentityUser> signInManager)
+        public UserService(UserManager<IdentityUser> service, SignInManager<IdentityUser> signInManager,
+            IOptions<AppSettings> appSettings)
         {
-            _usersRepository = usersRepository;
+            _appSettings = appSettings.Value;
             _service = service;
             _signInManager = signInManager;
         }
@@ -58,20 +58,31 @@ namespace RomanAuthSpa.Services
                 return response.AddError(new Error("Error", "Unauthorized", "user_credentials_invalid"));
             }
 
-            // authentication successful so generate jwt token
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
+            var now = DateTime.UtcNow;
+            var jwt = new JwtSecurityToken(issuer: _appSettings.Issuer,
+                audience: _appSettings.Audience,
+                notBefore: now,
+                expires: now.Add(TimeSpan.FromDays(360)),
+                signingCredentials: new SigningCredentials(_appSettings.GenerateKey(), SecurityAlgorithms.HmacSha256),
+                claims: new Claim[]
                 {
                     new Claim(ClaimTypes.Name, identity.Key.Id)
-                }),
-                Expires = DateTime.UtcNow.AddDays(366),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            string strToken = tokenHandler.WriteToken(token);
+                });
+
+            //// authentication successful so generate jwt token
+            //var tokenHandler = new JwtSecurityTokenHandler();
+            //var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            //var tokenDescriptor = new SecurityTokenDescriptor
+            //{
+            //    Subject = new ClaimsIdentity(new Claim[]
+            //    {
+            //        new Claim(ClaimTypes.Name, identity.Key.Id)
+            //    }),
+            //    Expires = DateTime.UtcNow.AddDays(366),
+            //    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            //};
+            //var token = tokenHandler.CreateToken(tokenDescriptor);
+            string strToken = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             return response.Success(new UserSigninViewModel()
             {
@@ -101,28 +112,6 @@ namespace RomanAuthSpa.Services
             }
             return new KeyValuePair<IdentityUser, IReadOnlyCollection<Claim>>(user, claims);
         }
-
-        public List<User> GetAll()
-        {
-            return _usersRepository.Users.ToList();
-        }
-
-
-        public User GetByUsername(string username, string password)
-        {
-            User user;
-            try
-            {
-                user = _usersRepository.Users.FirstOrDefault(x => x.Username == username && x.Password == password);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-
-            return user;
-        }
-
 
     }
 }

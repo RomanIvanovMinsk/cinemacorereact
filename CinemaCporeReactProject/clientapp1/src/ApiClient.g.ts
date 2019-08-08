@@ -17,7 +17,7 @@ export class UsersClient {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    signIn(userParam: SignInRequest): Promise<FileResponse | null> {
+    signIn(userParam: SignInRequest): Promise<ResponseOfUserSigninViewModel> {
         let url_ = this.baseUrl + "/api/Users/SignIn";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -28,7 +28,7 @@ export class UsersClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             }
         };
 
@@ -37,23 +37,25 @@ export class UsersClient {
         });
     }
 
-    protected processSignIn(response: Response): Promise<FileResponse | null> {
+    protected processSignIn(response: Response): Promise<ResponseOfUserSigninViewModel> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ResponseOfUserSigninViewModel.fromJS(resultData200);
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<FileResponse | null>(<any>null);
+        return Promise.resolve<ResponseOfUserSigninViewModel>(<any>null);
     }
 
-    signUp(userParam: SignUpRequest): Promise<FileResponse | null> {
+    signUp(userParam: SignUpRequest): Promise<ResponseOfUserSigninViewModel> {
         let url_ = this.baseUrl + "/api/Users/SignUp";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -64,7 +66,7 @@ export class UsersClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             }
         };
 
@@ -73,24 +75,26 @@ export class UsersClient {
         });
     }
 
-    protected processSignUp(response: Response): Promise<FileResponse | null> {
+    protected processSignUp(response: Response): Promise<ResponseOfUserSigninViewModel> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ResponseOfUserSigninViewModel.fromJS(resultData200);
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<FileResponse | null>(<any>null);
+        return Promise.resolve<ResponseOfUserSigninViewModel>(<any>null);
     }
 
-    getAll(): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/Users/GetAll";
+    testAuth(): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/Users/TestAuth";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
@@ -101,11 +105,11 @@ export class UsersClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetAll(_response);
+            return this.processTestAuth(_response);
         });
     }
 
-    protected processGetAll(response: Response): Promise<FileResponse | null> {
+    protected processTestAuth(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -120,6 +124,175 @@ export class UsersClient {
         }
         return Promise.resolve<FileResponse | null>(<any>null);
     }
+}
+
+export class Response implements IResponse {
+    isSuccess!: boolean;
+    errors?: ErrorDto[] | undefined;
+
+    constructor(data?: IResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.isSuccess = data["isSuccess"];
+            if (Array.isArray(data["errors"])) {
+                this.errors = [] as any;
+                for (let item of data["errors"])
+                    this.errors!.push(ErrorDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): Response {
+        data = typeof data === 'object' ? data : {};
+        let result = new Response();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        if (Array.isArray(this.errors)) {
+            data["errors"] = [];
+            for (let item of this.errors)
+                data["errors"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IResponse {
+    isSuccess: boolean;
+    errors?: ErrorDto[] | undefined;
+}
+
+export class ResponseOfUserSigninViewModel extends Response implements IResponseOfUserSigninViewModel {
+    data?: UserSigninViewModel | undefined;
+
+    constructor(data?: IResponseOfUserSigninViewModel) {
+        super(data);
+    }
+
+    init(data?: any) {
+        super.init(data);
+        if (data) {
+            this.data = data["data"] ? UserSigninViewModel.fromJS(data["data"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ResponseOfUserSigninViewModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResponseOfUserSigninViewModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IResponseOfUserSigninViewModel extends IResponse {
+    data?: UserSigninViewModel | undefined;
+}
+
+export class UserSigninViewModel implements IUserSigninViewModel {
+    token?: string | undefined;
+    email?: string | undefined;
+    fullName?: string | undefined;
+
+    constructor(data?: IUserSigninViewModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.token = data["token"];
+            this.email = data["email"];
+            this.fullName = data["fullName"];
+        }
+    }
+
+    static fromJS(data: any): UserSigninViewModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserSigninViewModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["token"] = this.token;
+        data["email"] = this.email;
+        data["fullName"] = this.fullName;
+        return data; 
+    }
+}
+
+export interface IUserSigninViewModel {
+    token?: string | undefined;
+    email?: string | undefined;
+    fullName?: string | undefined;
+}
+
+export class ErrorDto implements IErrorDto {
+    key?: string | undefined;
+    message?: string | undefined;
+    code?: string | undefined;
+
+    constructor(data?: IErrorDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.key = data["key"];
+            this.message = data["message"];
+            this.code = data["code"];
+        }
+    }
+
+    static fromJS(data: any): ErrorDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ErrorDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["key"] = this.key;
+        data["message"] = this.message;
+        data["code"] = this.code;
+        return data; 
+    }
+}
+
+export interface IErrorDto {
+    key?: string | undefined;
+    message?: string | undefined;
+    code?: string | undefined;
 }
 
 export class SignInRequest implements ISignInRequest {

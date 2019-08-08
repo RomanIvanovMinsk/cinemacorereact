@@ -1,11 +1,13 @@
 ﻿using CinemaCporeReactProject.Models;
+using CinemaCporeReactProject.Models.ReactGetStarted.Model;
+using CinemaCporeReactProject.Services;
+using CinemaCporeReactProject.Validators;
+using CinemaCporeReactProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RomanAuthSpa.Services;
-using RomanAuthSpa.ViewModels;
 using System.Threading.Tasks;
 
-namespace RomanAuthSpa.Controllers
+namespace CinemaCporeReactProject.Controllers
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
@@ -20,43 +22,52 @@ namespace RomanAuthSpa.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        [Route("[action]")]
-        public async Task<IActionResult> SignIn([FromBody]SignInRequest userParam)
+        public async Task<Response<UserSigninViewModel>> SignIn([FromBody]SignInRequest userParam)
         {
-            var response = await _userService.AuthenticateAsync(userParam.Email, userParam.Password);
+            Response<UserSigninViewModel> response;
+            var validator = new SignInValidator();
+            var validationResult = validator.Validate(userParam);
+            if (!validationResult.IsValid)
+            {
+                response = new Response<UserSigninViewModel>();
+                foreach (var error in validationResult.Errors)
+                {
+                    response.AddError(new Error(error.PropertyName, error.ErrorMessage, error.ErrorCode));
+                }
+                return response;
+            }
+            response = await _userService.AuthenticateAsync(userParam.Email, userParam.Password);
 
-            return Ok(response);
+            return response;
         }
 
         [AllowAnonymous]
         [HttpPost]
-        [Route("[action]")]
-        public async Task<IActionResult> SignUp([FromBody]SignUpRequest userParam)
+        public async Task<Response<UserSigninViewModel>> SignUp([FromBody]SignUpRequest userParam)
         {
-            var response = await _userService.CreateUser(userParam.Email, userParam.Password);
-
-            return Ok(response);
-        }
-
-
-        [HttpGet("[action]")]
-        public IActionResult GetAll()
-        {
-            var users = _userService.GetAll().ConvertAll((user) =>
+            Response<UserSigninViewModel> response;
+            var validator = new SignUpValidator();
+            var validationResult = validator.Validate(userParam);
+            if (!validationResult.IsValid)
             {
-                return new UserViewModel()
+                response = new Response<UserSigninViewModel>();
+                foreach (var error in validationResult.Errors)
                 {
-                    Id = user.Id,
-                    ShortDescription = user.ShortDescription,
-                    Description = user.Description,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                };
-            });
-            return Ok(users);
+                    response.AddError(new Error(error.PropertyName, error.ErrorMessage, error.ErrorCode));
+                }
+                return response;
+            }
+
+            response = await _userService.CreateUser(userParam.Email, userParam.Password);
+
+            return response;
         }
 
 
+        public IActionResult TestAuth()
+        {
+            return Ok();
+        }
 
     }
 }

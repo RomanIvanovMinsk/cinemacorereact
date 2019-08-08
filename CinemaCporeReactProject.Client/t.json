@@ -19,6 +19,11 @@
           "text/json",
           "application/*+json"
         ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
         "parameters": [
           {
             "name": "userParam",
@@ -32,10 +37,10 @@
         ],
         "responses": {
           "200": {
-            "x-nullable": true,
+            "x-nullable": false,
             "description": "",
             "schema": {
-              "type": "file"
+              "$ref": "#/definitions/ResponseOfUserSigninViewModel"
             }
           }
         }
@@ -53,6 +58,11 @@
           "text/json",
           "application/*+json"
         ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
         "parameters": [
           {
             "name": "userParam",
@@ -66,21 +76,21 @@
         ],
         "responses": {
           "200": {
-            "x-nullable": true,
+            "x-nullable": false,
             "description": "",
             "schema": {
-              "type": "file"
+              "$ref": "#/definitions/ResponseOfUserSigninViewModel"
             }
           }
         }
       }
     },
-    "/api/Users/GetAll": {
+    "/api/Users/TestAuth": {
       "get": {
         "tags": [
           "Users"
         ],
-        "operationId": "Users_GetAll",
+        "operationId": "Users_TestAuth",
         "responses": {
           "200": {
             "x-nullable": true,
@@ -94,6 +104,66 @@
     }
   },
   "definitions": {
+    "ResponseOfUserSigninViewModel": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Response"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "$ref": "#/definitions/UserSigninViewModel"
+            }
+          }
+        }
+      ]
+    },
+    "UserSigninViewModel": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        }
+      }
+    },
+    "Response": {
+      "type": "object",
+      "required": [
+        "isSuccess"
+      ],
+      "properties": {
+        "isSuccess": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Error"
+          }
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    },
     "SignInRequest": {
       "type": "object",
       "properties": {

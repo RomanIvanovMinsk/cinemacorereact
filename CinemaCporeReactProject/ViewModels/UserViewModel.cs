@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace RomanAuthSpa.ViewModels
+﻿namespace CinemaCporeReactProject.ViewModels
 {
     internal class UserViewModel
     {

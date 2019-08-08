@@ -1,6 +1,6 @@
 ﻿using CinemaCporeReactProject.DAL.Models;
+using CinemaCporeReactProject.DAL.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-using RomanAuthSpa;
 
 namespace CinemaCporeReactProject.DAL.Repositores
 {

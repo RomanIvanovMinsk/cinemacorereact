@@ -1,4 +1,5 @@
 ﻿using CinemaCporeReactProject.DAL.Models;
+using CinemaCporeReactProject.DAL.Models.Entities;
 using CinemaCporeReactProject.DAL.Repositores;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -106,7 +107,7 @@ namespace ImdbTools
 
 			if (repository.Users.Count() == 0)
 			{
-				repository.Users.Add(new RomanAuthSpa.User() { Username = "admin", Password = "b" });
+				repository.Users.Add(new User() { Username = "admin", Password = "b" });
 				repository.SaveChanges();
 			}
            
