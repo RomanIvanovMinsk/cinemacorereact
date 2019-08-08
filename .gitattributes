@@ -1,0 +1,6 @@
+*.cs text=auto
+*.js text=auto
+*.csproj text
+*.sln text
+*.jpg binary
+*.png binary
