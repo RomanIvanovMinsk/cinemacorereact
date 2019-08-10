@@ -8,7 +8,7 @@ namespace CinemaCporeReactProject.Services
 {
     public interface IUserService
     {
-        Task<Response<UserSigninViewModel>> AuthenticateAsync(string username, string password);
-        Task<Response<UserSigninViewModel>> CreateUser(string userName, string password);
+        Task<SResponse<UserSigninViewModel>> AuthenticateAsync(string username, string password);
+        Task<SResponse<UserSigninViewModel>> CreateUser(string userName, string password);
     }
 }

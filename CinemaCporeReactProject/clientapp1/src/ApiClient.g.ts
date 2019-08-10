@@ -17,7 +17,7 @@ export class UsersClient {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    signIn(userParam: SignInRequest): Promise<ResponseOfUserSigninViewModel> {
+    signIn(userParam: SignInRequest): Promise<SResponseOfUserSigninViewModel> {
         let url_ = this.baseUrl + "/api/Users/SignIn";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -37,14 +37,14 @@ export class UsersClient {
         });
     }
 
-    protected processSignIn(response: Response): Promise<ResponseOfUserSigninViewModel> {
+    protected processSignIn(response: Response): Promise<SResponseOfUserSigninViewModel> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ResponseOfUserSigninViewModel.fromJS(resultData200);
+            result200 = SResponseOfUserSigninViewModel.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -52,10 +52,10 @@ export class UsersClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<ResponseOfUserSigninViewModel>(<any>null);
+        return Promise.resolve<SResponseOfUserSigninViewModel>(<any>null);
     }
 
-    signUp(userParam: SignUpRequest): Promise<ResponseOfUserSigninViewModel> {
+    signUp(userParam: SignUpRequest): Promise<SResponseOfUserSigninViewModel> {
         let url_ = this.baseUrl + "/api/Users/SignUp";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -75,14 +75,14 @@ export class UsersClient {
         });
     }
 
-    protected processSignUp(response: Response): Promise<ResponseOfUserSigninViewModel> {
+    protected processSignUp(response: Response): Promise<SResponseOfUserSigninViewModel> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ResponseOfUserSigninViewModel.fromJS(resultData200);
+            result200 = SResponseOfUserSigninViewModel.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -90,7 +90,7 @@ export class UsersClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<ResponseOfUserSigninViewModel>(<any>null);
+        return Promise.resolve<SResponseOfUserSigninViewModel>(<any>null);
     }
 
     testAuth(): Promise<FileResponse | null> {
@@ -126,11 +126,11 @@ export class UsersClient {
     }
 }
 
-export class Response implements IResponse {
+export class SResponse implements ISResponse {
     isSuccess!: boolean;
     errors?: ErrorDto[] | undefined;
 
-    constructor(data?: IResponse) {
+    constructor(data?: ISResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -150,9 +150,9 @@ export class Response implements IResponse {
         }
     }
 
-    static fromJS(data: any): Response {
+    static fromJS(data: any): SResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new Response();
+        let result = new SResponse();
         result.init(data);
         return result;
     }
@@ -169,15 +169,15 @@ export class Response implements IResponse {
     }
 }
 
-export interface IResponse {
+export interface ISResponse {
     isSuccess: boolean;
     errors?: ErrorDto[] | undefined;
 }
 
-export class ResponseOfUserSigninViewModel extends Response implements IResponseOfUserSigninViewModel {
+export class SResponseOfUserSigninViewModel extends SResponse implements ISResponseOfUserSigninViewModel {
     data?: UserSigninViewModel | undefined;
 
-    constructor(data?: IResponseOfUserSigninViewModel) {
+    constructor(data?: ISResponseOfUserSigninViewModel) {
         super(data);
     }
 
@@ -188,9 +188,9 @@ export class ResponseOfUserSigninViewModel extends Response implements IResponse
         }
     }
 
-    static fromJS(data: any): ResponseOfUserSigninViewModel {
+    static fromJS(data: any): SResponseOfUserSigninViewModel {
         data = typeof data === 'object' ? data : {};
-        let result = new ResponseOfUserSigninViewModel();
+        let result = new SResponseOfUserSigninViewModel();
         result.init(data);
         return result;
     }
@@ -203,7 +203,7 @@ export class ResponseOfUserSigninViewModel extends Response implements IResponse
     }
 }
 
-export interface IResponseOfUserSigninViewModel extends IResponse {
+export interface ISResponseOfUserSigninViewModel extends ISResponse {
     data?: UserSigninViewModel | undefined;
 }
 

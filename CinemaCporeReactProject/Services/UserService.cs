@@ -32,9 +32,9 @@ namespace CinemaCporeReactProject.Services
             _signInManager = signInManager;
         }
 
-        public async Task<Response<UserSigninViewModel>> CreateUser(string userName, string password)
+        public async Task<SResponse<UserSigninViewModel>> CreateUser(string userName, string password)
         {
-            var response = new Response<UserSigninViewModel>();
+            var response = new SResponse<UserSigninViewModel>();
             var user = await _service.FindByNameAsync(userName);
             if (user != null)
             {
@@ -49,10 +49,10 @@ namespace CinemaCporeReactProject.Services
             return response.AddError(new Error("Error", "Failed to create user"));
         }
 
-        public async Task<Response<UserSigninViewModel>> AuthenticateAsync(string username, string password)
+        public async Task<SResponse<UserSigninViewModel>> AuthenticateAsync(string username, string password)
         {
             var identity = await GetIdentity(username, password);
-            var response = new Response<UserSigninViewModel>();
+            var response = new SResponse<UserSigninViewModel>();
             if (identity.Key == null)
             {
                 return response.AddError(new Error("Error", "Unauthorized", "user_credentials_invalid"));

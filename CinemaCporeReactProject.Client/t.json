@@ -40,7 +40,7 @@
             "x-nullable": false,
             "description": "",
             "schema": {
-              "$ref": "#/definitions/ResponseOfUserSigninViewModel"
+              "$ref": "#/definitions/SResponseOfUserSigninViewModel"
             }
           }
         }
@@ -79,7 +79,7 @@
             "x-nullable": false,
             "description": "",
             "schema": {
-              "$ref": "#/definitions/ResponseOfUserSigninViewModel"
+              "$ref": "#/definitions/SResponseOfUserSigninViewModel"
             }
           }
         }
@@ -104,10 +104,10 @@
     }
   },
   "definitions": {
-    "ResponseOfUserSigninViewModel": {
+    "SResponseOfUserSigninViewModel": {
       "allOf": [
         {
-          "$ref": "#/definitions/Response"
+          "$ref": "#/definitions/SResponse"
         },
         {
           "type": "object",
@@ -133,7 +133,7 @@
         }
       }
     },
-    "Response": {
+    "SResponse": {
       "type": "object",
       "required": [
         "isSuccess"

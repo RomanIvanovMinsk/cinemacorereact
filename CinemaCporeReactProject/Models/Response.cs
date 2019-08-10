@@ -4,9 +4,9 @@
 
     namespace ReactGetStarted.Model
     {
-        public class Response
+        public class SResponse
         {
-            public Response()
+            public SResponse()
             {
                 Errors = new List<Error>();
             }
@@ -14,27 +14,27 @@
             public List<Error> Errors { get; }
         }
 
-        public class Response<T> : Response
+        public class SResponse<T> : SResponse
         {
             public T Data { get; internal set; }
         }
 
         public static class ResponseExtension
         {
-            public static T AddError<T>(this T model, Error error) where T : Response
+            public static T AddError<T>(this T model, Error error) where T : SResponse
             {
                 model.Errors.Add(error);
                 model.IsSuccess = false;
                 return model;
             }
 
-            public static T Success<T>(this T model) where T : Response
+            public static T Success<T>(this T model) where T : SResponse
             {
                 model.IsSuccess = true;
                 return model;
             }
 
-            public static T Success<T, D>(this T model, D data) where T : Response<D>
+            public static T Success<T, D>(this T model, D data) where T : SResponse<D>
             {
                 model.Data = data;
                 model.IsSuccess = true;

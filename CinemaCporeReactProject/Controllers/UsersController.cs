@@ -22,14 +22,14 @@ namespace CinemaCporeReactProject.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<Response<UserSigninViewModel>> SignIn([FromBody]SignInRequest userParam)
+        public async Task<SResponse<UserSigninViewModel>> SignIn([FromBody]SignInRequest userParam)
         {
-            Response<UserSigninViewModel> response;
+            SResponse<UserSigninViewModel> response;
             var validator = new SignInValidator();
             var validationResult = validator.Validate(userParam);
             if (!validationResult.IsValid)
             {
-                response = new Response<UserSigninViewModel>();
+                response = new SResponse<UserSigninViewModel>();
                 foreach (var error in validationResult.Errors)
                 {
                     response.AddError(new Error(error.PropertyName, error.ErrorMessage, error.ErrorCode));
@@ -43,14 +43,14 @@ namespace CinemaCporeReactProject.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<Response<UserSigninViewModel>> SignUp([FromBody]SignUpRequest userParam)
+        public async Task<SResponse<UserSigninViewModel>> SignUp([FromBody]SignUpRequest userParam)
         {
-            Response<UserSigninViewModel> response;
+            SResponse<UserSigninViewModel> response;
             var validator = new SignUpValidator();
             var validationResult = validator.Validate(userParam);
             if (!validationResult.IsValid)
             {
-                response = new Response<UserSigninViewModel>();
+                response = new SResponse<UserSigninViewModel>();
                 foreach (var error in validationResult.Errors)
                 {
                     response.AddError(new Error(error.PropertyName, error.ErrorMessage, error.ErrorCode));
