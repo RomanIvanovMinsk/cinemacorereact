@@ -17,18 +17,3 @@ class Authentication{
 const Auth = new Authentication();
 
 export default Auth;
-
-// const Auth = {
-//     isAuthenticated: false,
-//     authenticate(): Promise<number> {
-//         this.isAuthenticated = true;
-//         return Promise.resolve(234);       
-//     },
-//     signout(callback: any) {
-//         this.isAuthenticated = false       
-//     }
-// }
-
-
-
-// export default Auth
