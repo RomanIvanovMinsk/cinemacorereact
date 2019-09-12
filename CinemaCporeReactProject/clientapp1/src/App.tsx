@@ -27,7 +27,10 @@ export default class App extends React.Component<any, Props> {
             <BrowserRouter>
               <div>
                   <AuthButton />
-                  <Route path="/" component={Login} />
+                  <ul>
+                      <li><Link to="/protected">Protected Page</Link></li>
+                  </ul>
+                  <Route path="/login" component={Login} />
                   <Route path="/register" component={Register} />
                   <PrivateRoute path='/protected' component={Private} />
               </div>
