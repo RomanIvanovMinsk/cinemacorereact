@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CinemaCporeReactProject", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CinemaCporeReactProject.Client", "CinemaCporeReactProject.Client\CinemaCporeReactProject.Client.csproj", "{03BC0775-A727-43A1-93EF-5A96B1BE0988}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImdbTools", "ImdbTools\ImdbTools.csproj", "{1C3E994D-6AC8-4DB8-BFD9-29BF9347FBAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImdbTools", "ImdbTools\ImdbTools.csproj", "{1C3E994D-6AC8-4DB8-BFD9-29BF9347FBAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaCporeReactProject.DAL", "CinemaCporeReactProject.DAL\CinemaCporeReactProject.DAL.csproj", "{EAD915EA-AF35-4801-BAF8-AB4564A21BE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CinemaCporeReactProject.DAL", "CinemaCporeReactProject.DAL\CinemaCporeReactProject.DAL.csproj", "{EAD915EA-AF35-4801-BAF8-AB4564A21BE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaCporeReactProject.Tests", "CinemaCporeReactProject.Tests\CinemaCporeReactProject.Tests.csproj", "{B79270F5-865F-43E0-88A9-003611FE4C85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{EAD915EA-AF35-4801-BAF8-AB4564A21BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAD915EA-AF35-4801-BAF8-AB4564A21BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAD915EA-AF35-4801-BAF8-AB4564A21BE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B79270F5-865F-43E0-88A9-003611FE4C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B79270F5-865F-43E0-88A9-003611FE4C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B79270F5-865F-43E0-88A9-003611FE4C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B79270F5-865F-43E0-88A9-003611FE4C85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
