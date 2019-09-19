@@ -1,0 +1,8 @@
+.image {
+  height: 360px;
+  border-radius: 22px;
+  background: "black";
+  &:hover {
+    filter: brightness(120%);
+  }
+}

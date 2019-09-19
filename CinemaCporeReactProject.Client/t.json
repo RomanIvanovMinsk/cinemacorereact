@@ -7,6 +7,23 @@
     "version": "v1"
   },
   "paths": {
+    "/api/Movies/Test": {
+      "get": {
+        "tags": [
+          "Movies"
+        ],
+        "operationId": "Movies_Test",
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
     "/api/Users/SignIn": {
       "post": {
         "tags": [
