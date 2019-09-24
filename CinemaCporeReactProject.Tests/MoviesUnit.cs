@@ -18,10 +18,10 @@ namespace CinemaCporeReactProject.Tests
             var builder = new DbContextOptionsBuilder<MoviesRepository>();
             builder.UseInMemoryDatabase("Movies");
             //builder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=CinemaCporeReactProject_UnitTest;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-            var factory = new LoggerFactory();
-            factory.AddConsole();
-            factory.AddDebug();
-            builder.UseLoggerFactory(factory);
+            //var factory = new LoggerFactory();
+            //factory.AddConsole();
+            //factory.AddDebug();
+            //builder.UseLoggerFactory(factory);
             builder.EnableSensitiveDataLogging();
             options = builder.Options;
             var context = new MoviesRepository(options);

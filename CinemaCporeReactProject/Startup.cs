@@ -30,10 +30,13 @@ namespace CinemaCporeReactProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            services.AddMvc(x =>
+            {
+                x.EnableEndpointRouting = false;
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddJsonOptions(options =>
                 {
-                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    //options.JsonSerializerOptions..SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
@@ -51,7 +54,11 @@ namespace CinemaCporeReactProject
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "CinemaCporeReactProject", Version = "v1" });
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo()
+                {
+                    Title = "CinemaCporeReactProject",
+                    Version = "v1"
+                });
             });
 
             // In production, the React files will be served from this directory
@@ -141,7 +148,7 @@ namespace CinemaCporeReactProject
                 }
             });
 
-            
+
         }
     }
 }
