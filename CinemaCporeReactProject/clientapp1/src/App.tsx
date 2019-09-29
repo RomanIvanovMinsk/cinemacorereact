@@ -8,6 +8,7 @@ import PrivateRoute from './Components/PrivateRoute';
 import './App.css';
 import Home from './Pages/Home';
 import NotFound from './Pages/NotFound';
+import ListOfMovies from './Pages/ListOfMovies/ListOfMovies';
 
 const Public = () => { return <h3>Public</h3> };
 const Private = () => { return (<h3>Protected</h3>) };
@@ -28,16 +29,16 @@ export default class App extends React.Component<any, Props> {
     return (
       <Router>
         <div>
-          
-            <AuthButton />
-            <ul>
-              <li><Link to="/protected">Protected Page</Link></li>
-            </ul>
-            <Switch>
+
+          <AuthButton />
+          <ul>
+            <li><Link to="/protected">Protected Page</Link></li>
+          </ul>
+          <Switch>
             <Route path="/" exact component={Home} />
             <Route path="/login" component={Login} />
             <Route path="/register" component={Register} />
-
+            <Route path="/movies" component={ListOfMovies} />
 
             <PrivateRoute path='/protected' component={Private} />
             <Route component={NotFound} />

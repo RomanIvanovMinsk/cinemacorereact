@@ -8,6 +8,7 @@
     <SpaRoot>clientapp1\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <LangVersion>latest</LangVersion>
+    <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
   </PropertyGroup>
   
   <ItemGroup>
@@ -16,12 +17,14 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.Extensions" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
     <PackageReference Include="Microsoft.IdentityModel" Version="7.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.5.0" />
-    <PackageReference Include="NSwag.AspNetCore" Version="13.0.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
+    <PackageReference Include="NSwag.AspNetCore" Version="13.1.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />
   </ItemGroup>

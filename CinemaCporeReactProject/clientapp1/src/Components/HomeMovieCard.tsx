@@ -9,6 +9,7 @@ class Type {
     }
 
     movie: Movie;
+    style?: React.CSSProperties = {}
 }
 
 export default class HomeMovieCard extends PureComponent<Type>{
@@ -18,7 +19,7 @@ export default class HomeMovieCard extends PureComponent<Type>{
 
     render() {
         return (
-            <span className="card">
+            <span className="card" style={this.props.style}>
                 <MovieThumbPreview image={this.props.movie.image} />
                 <div className="title">
                     <label>{this.props.movie.title}</label>

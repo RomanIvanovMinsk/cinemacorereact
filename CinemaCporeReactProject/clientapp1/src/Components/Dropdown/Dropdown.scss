@@ -1,0 +1,58 @@
+.list-container {
+  position: absolute;
+  width: 100%;
+  background-color: white;
+  z-index: 10;
+  border: 1px solid #dfdfdf;
+  -webkit-box-shadow: 0 2px 5px -1px #e8e8e8;
+  box-shadow: 0 2px 5px -1px #e8e8e8;
+  padding: 15px 0;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  max-height: 215px;
+  scroll-behavior: auto;
+  margin: auto;
+
+  animation-duration: 50ms;
+  animation-name: slidein;
+}
+
+@keyframes slidein {
+  from {
+    height: 0%;
+  }
+  to {
+    height: 100%;
+  }
+}
+
+.wrapper {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  position: relative;
+  width: 100%;
+}
+
+.header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+
+  line-height: 38px;
+  border: 1px solid #dfdfdf;
+  cursor: default;
+  position: relative;
+  background-color: #fff;
+}
+
+.item {
+  text-overflow: ellipsis;
+  &:hover {
+    background-color: #ffcc01;
+  }
+}

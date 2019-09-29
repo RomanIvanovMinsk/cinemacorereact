@@ -37,7 +37,8 @@ namespace CinemaCporeReactProject
                 .AddJsonOptions(options =>
                 {
                     //options.JsonSerializerOptions..SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                });
+                })
+                .AddRazorRuntimeCompilation();
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
@@ -147,7 +148,6 @@ namespace CinemaCporeReactProject
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
-
 
         }
     }
